@@ -1,6 +1,7 @@
 import sqlite3
 from sqlite3 import Error
 
+
 # Funcion para crear una conexion con la base de datos
 def createConnection(dbFile):
     '''Crea una conexion con la base de datos SQLite'''

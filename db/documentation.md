@@ -232,3 +232,90 @@ params = ('Strategy A', '2024-01-01', '2024-01-31', 100, 60, 40, 5000.0, 2000.0,
 ejecuteQuery(conn, query, params)
 ```
 ---
+
+## Directorio: `queries.py` 
+
+### Clase database
+#### Descripcion:
+La clase `dataBase` cuenta con dos metodos principales cuya tarea es registrar tanto operaciones como metricas en la base de datos.
+
+---
+### Metodo `__init__`
+#### Descripcion:
+El metodo `__init__` es el construcor de la clase. Cada vez que instanciamos la misma, en `__init__` se establece como atributo de la clase a un objeto `conn` que maneja la conexion con la base de datos.
+
+
+### Metodo `registerOperation`
+#### Descripcion:
+En este metodo lo que hacemos es definir una query de insercion de datos en la tabla `operations`. Luego definimos los valores a insertar. Y por ultimo ejecutamos la query con la funcion `ejecuteQuery` y posteriormente cerramos la conexion con la BD.
+
+#### Parametros 
+- `operationData` (`dict`): Diccionario con los datos de cada operacion
+
+#### Valor de retorno 
+- `None`: Nuestro metodo no retorna nada.
+
+#### Codigo del metodo:
+```python
+    def registerOperation(self, operationData):
+        '''Inserta una operacion en la tabla "operations"'''
+        query ='''
+        INSERT INTO operations(strategyName, symbol,
+                            orderType, quantity, entryPrice, exitPrice, entryTime, exitTime, profitLoss, notes)
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                '''
+         # Tuplas con los valores de los atributos de la clase
+        values = (
+            operationData.strategyName,
+            operationData.symbol,
+            operationData.orderType,
+            operationData.quantity,
+            operationData.entryPrice,
+            operationData.exitPrice,
+            operationData.entryTime,
+            operationData.exitTime,
+            operationData.profitLoss,
+            operationData.notes
+        )
+
+        # Ejecutamos consulta usando el cursor y pasando valores como parametros
+        ejecuteQuery(self.conn, query, values)
+        self.conn.commit()
+        closeConnection()
+        print('Operacion registrada con exito')
+```
+---
+
+### Metodo `registerMetrics`
+#### Descripcion: 
+En este metodo lo que hacemos es definir una query para insertar datos en la tabla `metrics` de la base de datos. Luego se establecen los valores que se desan insertar. Por ultimo se ejecuta la query con la funcion `ejecuteQuery` y se cierra la conexion con la BD.
+
+#### Parametros
+- `metrics` (`dict`): Diccionario con las metricas que se desean almacenar.
+
+#### Valor de retorno
+- `None`: Nuestro metodo no retrna nada.
+
+#### Codigo del metodo:
+```python
+    def registerMetrics(self, metrics):
+        'Inserta metricas en la tabla "metrics"'
+        query = '''INSERT INTO metrics(strategyName, sharpeRatio, win_loss_ratio, profitFactor, maxDrawdown, annualReturn, notes)
+                VALUES(?, ?, ?, ?, ?, ?, ?)
+                '''
+        values = (
+            metrics.startegyName,
+            metrics.sharpeRatio,
+            metrics.win_loss_ratio,
+            metrics.profitFactor, 
+            metrics.maxDrawdown,
+            metrics.annualReturn,
+            metrics.notes
+        )
+
+        # Ejecutamos consulta usando el cursor y pasando valores como parametros
+        ejecuteQuery(self.conn, query, values)
+        self.conn.commit()
+        closeConnection()
+        print('Metricas registradas con exito')
+```
