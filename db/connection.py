@@ -54,7 +54,7 @@ def ejecuteQuery(conn, query, params=None):
 # Ejemplo de uso
 if __name__ == '__main__':
     # Ruta a la base de datos (se puede cambiar a otro DBMS como mySQL)
-    database = 'tradingEnviroment.db' # Nombre del schema de la BD
+    database = 'db/tradingEnviroment.db' # Nombre del schema de la BD
 
     # Crear conexion
     conn = createConnection(database)
