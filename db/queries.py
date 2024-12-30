@@ -1,4 +1,5 @@
 from connection import createConnection, closeConnection, ejecuteQuery
+import pandas as pd
 
 def registerOperation(operationData):
     '''Inserta una operacion en la tabla "operations"'''
@@ -49,3 +50,24 @@ def registerMetrics(metrics):
     conn.commit()
     closeConnection()
     print('Metricas registradas con exito')
+
+def getOPerations(strategyName):
+    '''
+    Recuperamos operaciones de la base de datos para una estrategia especifica.
+
+    :param strategyName: Nombre de la estrategia.
+    :return: DataFrame con los datos de las operaciones.
+    '''
+    conn = createConnection()
+    query = '''SELECT * FROM operations WHERE strategyName = ?'''
+    operations = ejecuteQuery(conn, query, (strategyName,)) # Obtenemos los registros de las operaciones
+    closeConnection()
+
+    # Convertimos los resultados en un DataFrame
+    columns = ['strategyName', 'symbol', 'orderType', 
+               'quantity', 'entryPrice', 'exitPrice', 
+               'entryTime', 'exitTime', 'profitLoss', 'notes']
+    
+    df = pd.DataFrame(operations, columns=columns)
+    return df
+
