@@ -319,3 +319,52 @@ En este metodo lo que hacemos es definir una query para insertar datos en la tab
         closeConnection()
         print('Metricas registradas con exito')
 ```
+---
+
+### Función: `getOperations`
+
+#### Descripción: 
+La función `getOperations` se utiliza para recuperar las operaciones almacenadas en la base de datos asociadas a una estrategia específica. Filtra las operaciones según el nombre de la estrategia proporcionado y devuelve los datos en formato de DataFrame de Pandas, lo que facilita el análisis posterior.
+
+#### Parámetros: 
+- `strategyName` (`str`): 
+  - Nombre de la estrategia cuyas operaciones se desean recuperar. 
+  - Este nombre se utiliza como criterio de filtrado en la consulta SQL.
+
+#### Valor de retorno: 
+- `pd.DataFrame`: 
+  - DataFrame que contiene los datos de las operaciones recuperadas. 
+  - Las columnas incluyen: 
+    - `'strategyName'`: Nombre de la estrategia.
+    - `'symbol'`: Símbolo del instrumento operado.
+    - `'orderType'`: Tipo de orden (por ejemplo, compra o venta).
+    - `'quantity'`: Cantidad operada.
+    - `'entryPrice'`: Precio de entrada.
+    - `'exitPrice'`: Precio de salida.
+    - `'entryTime'`: Hora de entrada.
+    - `'exitTime'`: Hora de salida.
+    - `'profitLoss'`: Ganancia o pérdida de la operación.
+    - `'notes'`: Notas adicionales relacionadas con la operación.
+
+#### Código de la función: 
+```python
+def getOperations(strategyName):
+    '''
+    Recuperamos operaciones de la base de datos para una estrategia específica.
+
+    :param strategyName: Nombre de la estrategia.
+    :return: DataFrame con los datos de las operaciones.
+    '''
+    conn = createConnection()  # Establecemos conexión con la base de datos
+    query = '''SELECT * FROM operations WHERE strategyName = ?'''
+    operations = executeQuery(conn, query, (strategyName,))  # Obtenemos los registros de las operaciones
+    closeConnection()  # Cerramos la conexión a la base de datos
+
+    # Convertimos los resultados en un DataFrame
+    columns = ['strategyName', 'symbol', 'orderType', 
+               'quantity', 'entryPrice', 'exitPrice', 
+               'entryTime', 'exitTime', 'profitLoss', 'notes']
+    
+    df = pd.DataFrame(operations, columns=columns)
+    return df
+```
