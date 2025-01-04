@@ -32,11 +32,12 @@ def registerOperation(operationData):
 def registerMetrics(metrics):
     '''Inserta metricas en la tabla "metrics"'''
     conn = createConnection() # Nos conectamos a ola bd
-    query = '''INSERT INTO metrics(strategyName, sharpeRatio, win_loss_ratio, profitFactor, maxDrawdown, annualReturn, notes)
-            VALUES(?, ?, ?, ?, ?, ?, ?)
+    query = '''INSERT INTO metrics(strategyName, timestamp, sharpeRatio, win_loss_ratio, profitFactor, maxDrawdown, annualReturn, notes)
+            VALUES(?, ?, ?, ?, ?, ?, ?, ?)
             '''
     values = (
         metrics.startegyName,
+        metrics.timestamp, 
         metrics.sharpeRatio,
         metrics.win_loss_ratio,
         metrics.profitFactor, 
@@ -71,3 +72,19 @@ def getOPerations(strategyName):
     df = pd.DataFrame(operations, columns=columns)
     return df
 
+def getMetrics(strategyName, startPeriod, endPeriod):
+    '''Funcion para consultar metricas de la estrategia "strategyName"
+    :param strategyName: Nombre de la estrategia
+    :return: DataFrame con los datos de las operaciones
+    '''
+    conn = createConnection()
+    query = '''Select * FROM metrics WHERE strategyName = ? AND timestamp > ? AND timestamp < ?'''
+    metrics = ejecuteQuery(conn, query, (strategyName, startPeriod, endPeriod))
+    closeConnection()
+
+    # Convertiumos los resultados en un DataFrame
+    columns = ['strategyName', 'timestamp', 'sharpeRatio', 'win_loss_ratio', 
+               'profitFactor', 'maxDrawdown', 'annualReturn', 'notes']
+                
+    df = pd.DataFrame(metrics, columns=columns)
+    return df

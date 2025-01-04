@@ -368,3 +368,35 @@ def getOperations(strategyName):
     df = pd.DataFrame(operations, columns=columns)
     return df
 ```
+---
+### Funcion `getMetrics`
+#### Descripcion
+La funcion `getMetrics` se encarga de traer de la tabla "metrics" todas las metricas registradas en un intervalo de fechas de la estrategia "strategyName".
+
+#### Parametros 
+- strategyName (`str`): Nombre de la estrategia de la cual se quieren obtener las metricas.
+- startPeriod (`dateTime`): Fecha de inicio del intervalo de tiempo que se desea consultar.
+- endPeriod (`dateTime`): Fecha de fin del periodo que se desea consultar.
+
+#### Valor de retorno
+- df (`DataFrame`): DataFrame con las metricas consultadas a la BD.
+
+#### codigo de la funcion
+```python
+def getMetrics(strategyName, startPeriod, endPeriod):
+    '''Funcion para consultar metricas de la estrategia "strategyName"
+    :param strategyName: Nombre de la estrategia
+    :return: DataFrame con los datos de las operaciones
+    '''
+    conn = createConnection()
+    query = '''Select * FROM metrics WHERE strategyName = ? AND timestamp > ? AND timestamp < ?'''
+    metrics = ejecuteQuery(conn, query, (strategyName, startPeriod, endPeriod))
+    closeConnection()
+
+    # Convertiumos los resultados en un DataFrame
+    columns = ['strategyName', 'timestamp', 'sharpeRatio', 'win_loss_ratio', 
+               'profitFactor', 'maxDrawdown', 'annualReturn', 'notes']
+                
+    df = pd.DataFrame(metrics, columns=columns)
+    return df
+```

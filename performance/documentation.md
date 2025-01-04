@@ -110,3 +110,31 @@ class Metrics:
         elif self.timeFrame == 'M':  # Monthly
             sharpeRatio = sharpeRatio * (12**(1/2))
         return sharpeRatio
+```
+---
+### Clase `Reports`
+#### Descripcion:
+La clase `Reports` se encarga de generar un reporte en formato CSV para su posterior analisis. Ademas permite generar un reporte en formato PDF con diversas metricas y graficos de rendimiento. Los reportes se generan sobre un marco temporal especificado.
+
+#### Constructor:
+- __init__(self, metrics)
+    - Inicializamos la clase con un DataFrame de metricas.
+
+- Parametros del constructor
+    - metrics (`DataFrame`): Dataframe de metricas.
+
+#### createCSV(self, title)
+- Descripcion:
+    - El metodo `createCSV` se encarga de guardar un CSV de metricas de rendimiento.
+- Parametros
+    - title (`str`): Titulo del archivo csv donde se van a guardar las metricas
+- Valor de retorno (`None`): El metodo no devuelve nada
+
+#### Codigo de ejemplo
+```python
+    def createCSV(self, title):
+        # Pasamos a CSV el DataFrame de metricas
+        self.metrics.to_csv(f'TradeEnv/reports/{title}.csv', index=False, encoding='utf-8')
+        print('Reporte creado exitosamente')
+```
+

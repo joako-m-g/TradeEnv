@@ -17,6 +17,7 @@ CREATE TABLE operations (
 CREATE TABLE metrics (
     id INTEGER PRIMARY KEY AUTOINCREMENT,  -- ID único para cada registro de métricas
     strategyName TEXT NOT NULL,           -- Nombre de la estrategia
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP  -- Fecha y hora de la entrada (por defecto la fecha y hora actuales)
     sharpeRatio REAL,                     -- Ratio de Sharpe
     win_loss_ratio REAL,                   -- Win/Loss ratio
     profitFactor REAL,                    -- Factor de ganancia (ganancias totales / pérdidas totales)
