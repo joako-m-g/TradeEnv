@@ -1,5 +1,3 @@
----
-
 ### Clase: `Metrics`
 
 #### Descripción: 
