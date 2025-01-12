@@ -10,19 +10,24 @@ CREATE TABLE operations (
     entryTime TIMESTAMP NOT NULL, -- Fecha y hora de entrada
     exitTime TIMESTAMP, -- Fecha y hora de salida
     profitLoss REAL, -- Ganancia o perdida de la operacion
+    timeframe TEXT NOT NULL, -- Marco temporal en el que opera la estrategia
     notes TEXT, -- Notas opcionales de la operacion
 );
 
 -- Tabla para registrar metricas de rendimiento
 CREATE TABLE metrics (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,  -- ID único para cada registro de métricas
+    id INTEGER PRIMARY KEY AUTOINCREMENT, -- ID único para cada registro de métricas
     strategyName TEXT NOT NULL,           -- Nombre de la estrategia
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP  -- Fecha y hora de la entrada (por defecto la fecha y hora actuales)
+    timestamp DATETIME                    -- Fecha y hora de registro de las metricas
     sharpeRatio REAL,                     -- Ratio de Sharpe
-    win_loss_ratio REAL,                   -- Win/Loss ratio
+    lossTrades INT,                       -- Operaciones perdedoras
+    winTrades INT,                        -- Operaciones ganadoras
+    win_loss_ratio REAL,                  -- Win/Loss ratio
     profitFactor REAL,                    -- Factor de ganancia (ganancias totales / pérdidas totales)
     maxDrawdown REAL,                     -- Máximo drawdown (%)
+    PnL REAL,                             -- Retornos netos (PnL)
+    PnLmean REAL,                         -- Promedio de retornos netos
     annualReturn REAL,                    -- Retorno anualizado (%)
-    notes TEXT                             -- Notas opcionales
+    notes TEXT                            -- Notas opcionales
 );
 

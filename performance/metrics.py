@@ -22,16 +22,17 @@ class Metrics:
     def PnL(self):
         # Calculamos el retorno hasta este punto
         winnLossTotal = self.operationsGrouped['profitLoss'].sum()
-        return winnLossTotal
+        winnlosstotalMean = self.operationsGrouped['profitLoss'].mean()
+        return winnLossTotal, winnlosstotalMean
     
     def winnLossTrades(self):
         winTrades = self.operations[self.operations['profitLoss'] > 0]
         lossTrades = self.operations[self.operations['profitLoss'] <= 0] 
-        return lossTrades, winTrades
+        return len(winTrades), len(lossTrades)
     
     def WLRratio(self):
-        lossTrades, winTrades = self.winnLossTrades()
-        winnLossRatio = len(winTrades) / max(1, len(lossTrades))
+        lenLossTrades, lenWinTrades = self.winnLossTrades()
+        winnLossRatio = lenWinTrades / max(1, lenLossTrades)
         return winnLossRatio
     
     def Pfactor(self):
@@ -54,3 +55,24 @@ class Metrics:
         elif self.timeFrame == 'M':  # Monthly
             sharpeRatio = sharpeRatio * (12**(1/2))
         return sharpeRatio
+    
+    def annualReturn(self, initialCapital=1):
+        # Calculamos el retorno acumulado total
+        totalReturn = self.operationsGrouped['profitLoss'].sum()
+
+        # Calculamos la cantidad de períodos (grupos de tiempo) en el data set
+        numPeriods = len(self.operationsGrouped)
+
+        # Determinamos la frecuencia anual en función del timeFrame
+        if self.timeFrame == 'D':  # Diario
+            annualFreq = 252
+        elif self.timeFrame == 'W':  # Semanal
+            annualFreq = 52
+        elif self.timeFrame == 'M':  # Mensual
+            annualFreq = 12
+        else:
+            raise ValueError("TimeFrame no soportado para cálculo anualizado.")
+
+        # Calculamos el retorno anualizado
+        annualizedReturn = (1 + totalReturn / initialCapital) ** (annualFreq / numPeriods) - 1
+        return annualizedReturn
