@@ -1,4 +1,4 @@
-# Entorno de ejecucion de sistemas de Trading
+# Entorno de ejecución de sistemas de Trading
 
 ## Descripcion
 Este proyecto es una plataforma para la ejecución de sistemas de trading algorítmico mediante una conexión directa con Interactive Brokers.  
