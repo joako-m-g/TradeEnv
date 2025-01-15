@@ -24,9 +24,9 @@ CREATE TABLE metrics (
     winTrades INTEGER,                        -- Operaciones ganadoras
     win_loss_ratio REAL,                  -- Win/Loss ratio
     profitFactor REAL,                    -- Factor de ganancia (ganancias totales / pérdidas totales)
-    maxDrawdown REAL,                     -- Máximo drawdown (%)
+    maxDrawdown REAL,                     -- Máximo drawdown
     PnL REAL,                             -- Retornos netos (PnL)
-    annualReturn REAL,                    -- Retorno anualizado (%)
+    annualReturn REAL,                    -- Retorno anualizado 
     notes TEXT                            -- Notas opcionales
 );
 

@@ -109,8 +109,8 @@ class Reports:
             "promedios clave de las métricas analizadas, gráficos que ilustran la evolución temporal de "
             "estas métricas, y una distribución visual de las operaciones por día de la semana. Además, "
             "se incorpora un análisis de la proporción de operaciones ganadoras frente a perdedoras. "
-            "Este reporte tiene como objetivo brindar una visión clara y general sobre el desempeño de la estrategia."
-            "Nota: Las metricas se encuentran anualizadas segun el marco temporal en el que opera la estrategia."
+            "Este reporte tiene como objetivo brindar una visión clara y general sobre el desempeño de la estrategia. "
+            "Nota: Las métricas se encuentran anualizadas según el marco temporal en el que opera la estrategia."
         )
         pdf.multi_cell(0, 10, intro_text, align='C')
         pdf.ln(10)
@@ -170,3 +170,51 @@ class Reports:
         # Guardar el PDF
         pdf.output(f'reports/{self.title}_informeDesempeño.pdf')
         print('Reporte PDF creado exitosamente')
+
+if __name__ == "__main__":
+    # Generar datos simulados para métricas no estacionarias y no estrictamente tendenciales
+    np.random.seed(42)
+    dates = pd.date_range(start="2023-01-01", periods=50, freq="D")
+
+    # Fluctuaciones aleatorias y un componente cíclico para simular series no estacionarias
+    sharpe_ratio = np.sin(np.linspace(0, 10, 50)) + np.random.normal(0, 0.2, 50)  # Componente cíclico + ruido
+    win_loss_ratio = np.cos(np.linspace(0, 10, 50)) + np.random.normal(0, 0.3, 50)  # Componente cíclico + ruido
+    profit_factor = np.sin(np.linspace(0, 20, 50)) + np.random.normal(0, 0.4, 50)  # Componente cíclico + ruido
+    max_drawdown = np.random.uniform(-0.2, -0.05, 50) + np.random.normal(0, 0.05, 50)  # Ruido con fluctuaciones
+    annual_return = np.random.uniform(0.05, 0.2, 50) + np.random.normal(0, 0.05, 50)  # Ruido con fluctuaciones
+    pnl = np.random.uniform(3000, 9000, 50) + np.random.normal(0, 500, 50)  # Valores aleatorios con ruido
+
+    # Datos de métricas no estacionarias y no estrictamente tendenciales
+    metrics_data = {
+        "id": range(1, 51),
+        "strategyName": ["SMACross"] * 50,
+        "timestamp": dates,
+        "sharpeRatio": sharpe_ratio,
+        "win_loss_ratio": win_loss_ratio,
+        "profitFactor": profit_factor,
+        "maxDrawdown": max_drawdown,
+        "annualReturn": annual_return,
+        "PnL": pnl,
+        "winTrades": np.random.randint(20, 80, 50),
+        "lossTrades": np.random.randint(10, 50, 50),
+        "notes": ["" for _ in range(50)]
+    }
+    metrics_df = pd.DataFrame(metrics_data)
+
+    # Generar datos simulados para operaciones con fluctuaciones cíclicas
+    operations_data = {
+        "entryTime": pd.date_range(start="2023-01-01", periods=50, freq="D"),
+        "exitTime": pd.date_range(start="2023-01-02", periods=50, freq="D"),
+        "PnL": np.sin(np.linspace(0, 10, 50)) + np.random.normal(0, 200, 50),  # Componente cíclico + ruido
+        "notes": ["" for _ in range(50)]
+    }
+    operations_df = pd.DataFrame(operations_data)
+
+    # Crear el reporte
+    report_title = "SMACross"
+    report = Reports(metrics_df, operations_df, report_title)
+
+    # Crear CSV, PDF y gráficos
+    #report.createCSV()
+    report.createPDF()
+    print("Informe generado correctamente.")

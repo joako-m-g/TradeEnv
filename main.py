@@ -139,13 +139,13 @@ class MetricsUpdater:
                 'winTrades' : metrics.winnLossTrades()[0], # Trades ganadores
                 'WLRratio' : metrics.WLRratio(), # Win Loss ratio
                 'Pfactor' : metrics.Pfactor(), # Factor profit
-                'maxDrawdown' : metrics.drawDown(), # Drawdown %
+                'maxDrawdown' : metrics.drawDown(), # Drawdown 
                 'sharpeRatio' : metrics.sharpeRatio(), # Raio de sharpe anualizado
                 'annualReturn' : metrics.annualReturn(), # Retornos anualizados
                 'strategyName' : strategy, # Nombre de la estrategia
                 'notes' : '-' 
             }
-        registerMetrics(metricas) # Registramos metricaas en la BD
+            registerMetrics(metricas) # Registramos metricaas en la BD
         print('Mericas calculadas exitosamente')
 
     def createReport(self, currentTime):
