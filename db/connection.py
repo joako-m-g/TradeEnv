@@ -1,9 +1,10 @@
 import sqlite3
 from sqlite3 import Error
+import pandas as pd
 
 
 # Funcion para crear una conexion con la base de datos
-def createConnection(dbFile):
+def createConnection(dbFile='db/tradingEnviroment.db'):
     '''Crea una conexion con la base de datos SQLite'''
     conn = None
     try:
@@ -14,18 +15,39 @@ def createConnection(dbFile):
     
     return conn
 
+# Funcion para crear las tablas
+def createTables(conn, schema='db\schema.sql'):
+    sqlScript = ''
+    try:
+        with open(schema, 'r') as file:
+            sqlScript = file.read()
+        cursor = conn.cursor()
+        cursor.executescript(sqlScript)
+        conn.commit()
+        print("Script SQL ejecutado correctamente y tablas creadas.")
+    except sqlite3.Error as e:
+        print(f"Error al ejecutar el script SQL: {e}")
+    except FileNotFoundError:
+        print(f"Archivo SQL no encontrado: {sqlScript}")
+
 # Funcion para crear tablas
-def createTables(conn): 
-    '''Crea las tablas en la base de datos a partir del esquema SQL.'''
+def ejecuteQuery(conn, query, params=None, query_type="SELECT"):
     try: 
         cursor = conn.cursor()
-        # Ejecutar el script para crear las tablas
-        with open('db/schema.sql', 'r') as f:
-            cursor.executescript(f.read())
+        if query_type == "SELECT":
+            # Si es un SELECT, ejecutar y devolver el DataFrame
+            df = pd.read_sql_query(query, conn, params=params)
+            return df
+        
+        # Si no es un SELECT, ejecutar la consulta de modificación
+        cursor.execute(query, params)
+        conn.commit()  # Confirmar los cambios realizados
 
-            print("Tablas creadas exitosamente.")
+        return None  # No devolvemos nada para consultas de modificación (INSERT, UPDATE, DELETE)
+    
     except Error as e:
-        print(f'Error al crear las tablas: {e}')
+        print(f'Error al ejecutar la consulta: {e}')
+        return None
 
 # Funcion para cerrar la conexion
 def closeConnection(conn):
@@ -33,23 +55,6 @@ def closeConnection(conn):
     if conn:
         conn.close()
         print('Conexion cerrada')
-
-# Funcion para ejecutar una consulta (ej: insertar o seleccionar datos)
-def ejecuteQuery(conn, query, params=None):
-    '''Ejecuta una consulta SQL.'''
-    cursor = conn.cursor()
-    
-    try: 
-        if params:
-            cursor.execute(query, params)
-        else: 
-            cursor.execute(query)
-        conn.commit()
-        return cursor
-    
-    except Error as e:
-        print(f'Error al ejecutar la consulta: {e}')
-        return None
 
 # Ejemplo de uso
 if __name__ == '__main__':
@@ -60,7 +65,7 @@ if __name__ == '__main__':
     conn = createConnection(database)
 
     if conn:
-    # Aquí puedes agregar más funciones para insertar, actualizar, y consultar datos
+        # Aquí puedes agregar más funciones para insertar, actualizar, y consultar datos
         
         # Cerrar conexión
         closeConnection(conn)

@@ -7,23 +7,11 @@ class Metrics:
 
         # Convertir el campo 'entryTime' a tipo datetime si no lo es
         self.operations['entryTime'] = pd.to_datetime(self.operations['entryTime'])
-        
-        # Agrupar las operaciones por el timeframe
-        if self.timeFrame == 'D':  # Daily
-            self.operations['date'] = self.operations['entryTime'].dt.date
-        elif self.timeFrame == 'W':  # Weekly
-            self.operations['date'] = self.operations['entryTime'].dt.to_period('W')
-        elif self.timeFrame == 'M':  # Monthly
-            self.operations['date'] = self.operations['entryTime'].dt.to_period('M')
-        
-        # Agrupamos las ganancias por cada grupo de tiempo
-        self.operationsGrouped = self.operations.groupby('date')['profitLoss'].sum().reset_index()
 
     def PnL(self):
         # Calculamos el retorno hasta este punto
-        winnLossTotal = self.operationsGrouped['profitLoss'].sum()
-        winnlosstotalMean = self.operationsGrouped['profitLoss'].mean()
-        return winnLossTotal, winnlosstotalMean
+        winnLossTotal = self.operations['profitLoss'].sum()
+        return winnLossTotal
     
     def winnLossTrades(self):
         winTrades = self.operations[self.operations['profitLoss'] > 0]
@@ -41,13 +29,13 @@ class Metrics:
         return profitFactor
     
     def drawDown(self):
-        self.operationsGrouped['cumulativeProfit'] = self.operationsGrouped['profitLoss'].cumsum()
-        maxDrawdown = self.operationsGrouped['cumulativeProfit'].cummax() - self.operationsGrouped['cumulativeProfit']
+        self.operations['cumulativeProfit'] = self.operations['profitLoss'].cumsum()
+        maxDrawdown = self.operations['cumulativeProfit'].cummax() - self.operations['cumulativeProfit']
         maxDrawdown = maxDrawdown.max()
         return maxDrawdown
     
     def sharpeRatio(self): 
-        sharpeRatio = self.operationsGrouped['profitLoss'] - 0.01 / self.operationsGrouped['profitLoss'].std()
+        sharpeRatio = self.operations['profitLoss'] - 0.01 / self.operations['profitLoss'].std()
         if self.timeFrame == 'D':  # Daily
             sharpeRatio = sharpeRatio * (252**(1/2))
         elif self.timeFrame == 'W':  # Weekly
@@ -58,10 +46,10 @@ class Metrics:
     
     def annualReturn(self, initialCapital=1):
         # Calculamos el retorno acumulado total
-        totalReturn = self.operationsGrouped['profitLoss'].sum()
+        totalReturn = self.operations['profitLoss'].sum()
 
         # Calculamos la cantidad de períodos (grupos de tiempo) en el data set
-        numPeriods = len(self.operationsGrouped)
+        numPeriods = len(self.operations)
 
         # Determinamos la frecuencia anual en función del timeFrame
         if self.timeFrame == 'D':  # Diario

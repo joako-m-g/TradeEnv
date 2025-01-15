@@ -1,4 +1,4 @@
-from connection import createConnection, closeConnection, ejecuteQuery
+from db.connection import createConnection, closeConnection, ejecuteQuery
 import pandas as pd
 import datetime
 
@@ -26,7 +26,7 @@ def registerOperation(operationData):
     )
 
     # Ejecutamos consulta usando el cursor y pasando valores como parametros
-    ejecuteQuery(conn, query, values)
+    ejecuteQuery(conn, query, values, query_type="INSERT")
     conn.commit()
     closeConnection()
     print('Operacion registrada con exito')
@@ -35,7 +35,7 @@ def registerMetrics(metrics):
     '''Inserta metricas en la tabla "metrics"'''
     conn = createConnection() # Nos conectamos a ola bd
     query = '''INSERT INTO metrics(strategyName, timestamp, sharpeRatio, win_loss_ratio, profitFactor, maxDrawdown, annualReturn, notes)
-            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             '''
     values = (
         metrics.startegyName,
@@ -43,17 +43,16 @@ def registerMetrics(metrics):
         metrics.sharpeRatio,
         metrics.lossTrades,
         metrics.winTrades,
-        metrics.win_loss_ratio,
-        metrics.profitFactor, 
+        metrics.WLRratio,
+        metrics.Pfactor, 
         metrics.maxDrawdown,
         metrics.annualReturn,
         metrics.PnL,
-        metrics.PnLmean,
         metrics.notes
     )
 
     # Ejecutamos consulta usando el cursor y pasando valores como parametros
-    ejecuteQuery(conn, query, values)
+    ejecuteQuery(conn, query, values, query_type="INSERT")
     conn.commit()
     closeConnection()
     print('Metricas registradas con exito')
@@ -67,16 +66,9 @@ def getOPerations(strategyName, startPeriod, endPeriod):
     '''
     conn = createConnection()
     query = '''SELECT * FROM operations WHERE strategyName = ? AND entryPrice >= ? AND entryPrice < ?'''
-    operations = ejecuteQuery(conn, query, (strategyName, startPeriod, endPeriod)) # Obtenemos los registros de las operaciones
+    operations = ejecuteQuery(conn, query, (strategyName, startPeriod, endPeriod), query_type="SELECT") # Obtenemos los registros de las operaciones
     closeConnection()
-
-    # Convertimos los resultados en un DataFrame
-    columns = ['strategyName', 'symbol', 'orderType', 
-               'quantity', 'entryPrice', 'exitPrice', 
-               'entryTime', 'exitTime', 'profitLoss', 'timeframe', 'notes']
-    
-    df = pd.DataFrame(operations, columns=columns)
-    return df
+    return operations
 
 def getMetrics(strategyName, startPeriod, endPeriod):
     '''Funcion para consultar metricas de la estrategia "strategyName"
@@ -85,12 +77,6 @@ def getMetrics(strategyName, startPeriod, endPeriod):
     '''
     conn = createConnection()
     query = '''Select * FROM metrics WHERE strategyName = ? AND timestamp > ? AND timestamp < ?'''
-    metrics = ejecuteQuery(conn, query, (strategyName, startPeriod, endPeriod))
+    metrics = ejecuteQuery(conn, query, (strategyName, startPeriod, endPeriod), query_type="SELECT")
     closeConnection()
-
-    # Convertiumos los resultados en un DataFrame
-    columns = ['strategyName', 'timestamp', 'sharpeRatio', 'lossTrades', 'winTrades', 
-               'win_loss_ratio', 'profitFactor', 'maxDrawdown', 'annualReturn', 'PnL', 'PnLmean', 'notes']
-                
-    df = pd.DataFrame(metrics, columns=columns)
-    return df # Retornamos df de metricas
+    return metrics # Retornamos df de metricas

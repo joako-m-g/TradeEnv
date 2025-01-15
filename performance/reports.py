@@ -15,7 +15,7 @@ class Reports:
         self.operations = operations
         self.title = title
     
-    def createCSV(self, title):
+    def createCSV(self):
         # Pasamos a CSV el DataFrame de metricas
         self.metrics.to_csv(f'TradeEnv/reports/{self.title}.csv', index=False, encoding='utf-8')
         print('Reporte creado exitosamente')
@@ -170,78 +170,3 @@ class Reports:
         # Guardar el PDF
         pdf.output(f'reports/{self.title}_informeDesempeño.pdf')
         print('Reporte PDF creado exitosamente')
-
-data = {
-    'id': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    'strategyName': ['Estrategia Única'] * 10,
-    'timestamp': [
-        '2025-01-01 12:00:00', '2025-01-02 14:30:00', '2025-01-03 09:15:00', 
-        '2025-01-04 11:00:00', '2025-01-05 15:45:00', '2025-01-06 10:30:00',
-        '2025-01-07 14:00:00', '2025-01-08 13:30:00', '2025-01-09 09:00:00', 
-        '2025-01-10 16:20:00'
-    ],
-    'sharpeRatio': [1.45, 2.10, 1.75, 1.60, 1.85, 2.05, 1.95, 2.15, 1.80, 1.90],
-    'win_loss_ratio': [1.8, 2.2, 1.9, 1.6, 2.1, 1.8, 2.0, 1.9, 2.0, 2.3],
-    'profitFactor': [1.7, 2.0, 1.8, 1.9, 2.0, 1.6, 1.8, 2.1, 1.9, 2.0],
-    'maxDrawdown': [-12.5, -10.0, -13.0, -11.5, -9.5, -10.5, -12.0, -11.0, -9.0, -10.0],
-    'annualReturn': [15.2, 18.0, 16.5, 17.0, 19.5, 14.0, 18.5, 17.8, 16.2, 20.0],
-    'notes': [
-        'Buena performance en mercados laterales.',
-        'Adecuado para tendencias fuertes.',
-        'Funciona mejor en alta volatilidad.',
-        'Rendimiento estable en mercados en rango.',
-        'Excelente en tendencias alcistas.',
-        'Poco eficiente en mercados de baja volatilidad.',
-        'Alta eficiencia en mercados volátiles.',
-        'Buena relación riesgo/beneficio.',
-        'Estrategia balanceada, adecuada para todo tipo de mercado.',
-        'Excelente performance en mercados de fuerte tendencia.'
-    ]
-}
-
-data_operations = {
-    'id': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    'strategyName': ['Estrategia Única'] * 10,
-    'symbol': ['AAPL', 'TSLA', 'GOOG', 'AMZN', 'MSFT', 'NFLX', 'META', 'NVDA', 'AMD', 'BABA'],
-    'orderType': ['Buy', 'Sell', 'Buy', 'Sell', 'Buy', 'Sell', 'Buy', 'Sell', 'Buy', 'Sell'],
-    'quantity': [100, 150, 200, 250, 180, 130, 170, 220, 160, 140],
-    'entryPrice': [150.00, 650.00, 2700.00, 3300.00, 280.00, 550.00, 330.00, 240.00, 140.00, 200.00],
-    'exitPrice': [155.00, 640.00, 2750.00, 3350.00, 290.00, 530.00, 340.00, 250.00, 150.00, 190.00],
-    'entryTime': [
-        '2025-01-01 09:00:00', '2025-01-02 11:30:00', '2025-01-03 13:15:00', 
-        '2025-01-04 10:45:00', '2025-01-05 14:20:00', '2025-01-06 15:10:00', 
-        '2025-01-07 12:00:00', '2025-01-08 09:30:00', '2025-01-09 10:00:00', 
-        '2025-01-10 14:00:00'
-    ],
-    'exitTime': [
-        '2025-01-01 15:00:00', '2025-01-02 13:30:00', '2025-01-03 14:45:00', 
-        '2025-01-04 17:00:00', '2025-01-05 16:00:00', '2025-01-06 17:30:00', 
-        '2025-01-07 15:30:00', '2025-01-08 14:00:00', '2025-01-09 12:30:00', 
-        '2025-01-10 16:30:00'
-    ],
-    'profitLoss': [500, -1500, 10000, 12500, 1800, -2600, 6800, 2200, 1600, -1400],
-    'notes': [
-        'Operación exitosa, buen movimiento en tendencia.',
-        'Operación cerrada con pérdidas debido a la volatilidad.',
-        'Buena ganancia en un movimiento alcista.',
-        'Beneficio alto por fuerte tendencia alcista.',
-        'Ganancia moderada en tendencia alcista.',
-        'Pérdida por salida prematura.',
-        'Excelente rendimiento en una acción volátil.',
-        'Buena relación riesgo/recompensa en operación.',
-        'Operación balanceada, cierre adecuado.',
-        'Pérdida por movimiento inesperado del mercado.'
-    ]
-}
-
-df = pd.DataFrame(data)
-# Agregar las columnas de winTrades y lossTrades con valores inventados
-df['PnL'] = [10, 20, 30, 12, 24, 20, 5, 35, 67, 70]
-df['winTrades'] = [50, 75, 60, 45, 80, 55, 70, 65, 68, 85]  # Ejemplo de número de operaciones ganadoras
-df['lossTrades'] = [20, 15, 18, 25, 10, 22, 18, 20, 15, 12]  # Ejemplo de número de operaciones perdedoras
-
-df_op = pd.DataFrame(data_operations)
-a = Reports(df, df_op, 'puta')
-a.createPDF()
-a.operationsHistogram()
-a.plotPieChart()
